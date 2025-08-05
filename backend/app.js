@@ -7,18 +7,11 @@ require('dotenv').config();
 
 const app = express();
 
-// === Configurar CORS para permitir solo tu frontend ===
-const allowedOrigins = ['https://frontend-github-io-pi.vercel.app/']; // ← Cambia esta URL por la real de Vercel
 
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('No permitido por CORS'));
-    }
-  },
-  credentials: true
+  origin: 'https://frontend-github-io-pi.vercel.app/',  
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
@@ -28,7 +21,7 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB conectado'))
   .catch(err => console.log(err));
 
-// ===== Modelos de datos =====
+// ===== Esquemas =====
 const User = mongoose.model('User', new mongoose.Schema({
   username: String,
   password: String,
@@ -98,5 +91,6 @@ app.delete('/api/productos/:id', auth, isAdmin, async (req, res) => {
 // ===== Iniciar servidor =====
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
+
 
 
