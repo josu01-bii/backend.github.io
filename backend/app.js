@@ -6,15 +6,29 @@ const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
+
+// === Configurar CORS para permitir solo tu frontend ===
+const allowedOrigins = ['https://frontend-github-io-pi.vercel.app/']; // ← Cambia esta URL por la real de Vercel
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS'));
+    }
+  },
+  credentials: true
+}));
+
 app.use(express.json());
 
-// ===== MongoDB Connection =====
+// ===== Conexión a MongoDB Atlas =====
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB conectado'))
   .catch(err => console.log(err));
 
-// ===== Esquemas simples =====
+// ===== Modelos de datos =====
 const User = mongoose.model('User', new mongoose.Schema({
   username: String,
   password: String,
@@ -43,7 +57,7 @@ function isAdmin(req, res, next) {
   next();
 }
 
-// ===== Rutas =====
+// ===== Rutas API =====
 app.post('/api/register', async (req, res) => {
   const { username, password } = req.body;
   const hashed = await bcrypt.hash(password, 10);
@@ -81,5 +95,8 @@ app.delete('/api/productos/:id', auth, isAdmin, async (req, res) => {
   res.sendStatus(204);
 });
 
+// ===== Iniciar servidor =====
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
+
+
