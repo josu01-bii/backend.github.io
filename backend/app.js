@@ -1,7 +1,3 @@
-
-
-
-
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -96,3 +92,5 @@ app.delete('/api/productos/:id', auth, isAdmin, async (req, res) => {
 // ===== Iniciar servidor =====
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
+
+
