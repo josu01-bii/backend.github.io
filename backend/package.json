@@ -1,12 +1,18 @@
 {
-  "name": "biblioteca-backend",
+  "name": "tienda-backend",
   "version": "1.0.0",
-  "description": "API REST para la gestión de libros en una biblioteca escolar.",
+  "description": "API REST para la gestión de tienda rapida.",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
-  "keywords": ["biblioteca", "nodejs", "express", "mongodb"],
+  "keywords": [
+    "biblioteca",
+    "nodejs",
+    "express",
+    "mongodb"
+  ],
   "author": "Tu Nombre",
   "license": "MIT",
   "dependencies": {
@@ -16,5 +22,8 @@
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }
