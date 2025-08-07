@@ -4,12 +4,22 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
-
 const app = express();
 
 
+const allowedOrigins = [
+  'http://127.0.0.1:5500',
+  'https://frontend-github-io-pi.vercel.app'
+];
+
 app.use(cors({
-  origin: 'https://frontend-github-io-pi.vercel.app',  
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed for this origin'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -92,5 +102,8 @@ app.delete('/api/productos/:id', auth, isAdmin, async (req, res) => {
 // ===== Iniciar servidor =====
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
+
+
+
 
 
