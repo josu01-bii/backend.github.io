@@ -4,22 +4,14 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
+
 const app = express();
 
-
-const allowedOrigins = [
-  'http://127.0.0.1:5500',
-  'https://frontend-github-io-pi.vercel.app'
-];
-
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS not allowed for this origin'));
-    }
-  },
+  origin: [
+    'https://frontend-github-io-pi.vercel.app',
+    'http://127.0.0.1:5500'
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -45,7 +37,7 @@ const Producto = mongoose.model('Producto', new mongoose.Schema({
   categoria: String
 }));
 
-// ===== Middleware de autenticación =====
+// ===== Middleware =====
 function auth(req, res, next) {
   const token = req.headers['authorization'];
   if (!token) return res.sendStatus(401);
@@ -61,7 +53,7 @@ function isAdmin(req, res, next) {
   next();
 }
 
-// ===== Rutas API =====
+// ===== Rutas =====
 app.post('/api/register', async (req, res) => {
   const { username, password } = req.body;
   const hashed = await bcrypt.hash(password, 10);
@@ -73,10 +65,10 @@ app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
   const user = await User.findOne({ username });
   if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.sendStatus(401);
+    return res.status(401).send("Usuario o contraseña incorrectos");
   }
   const token = jwt.sign({ username: user.username, role: user.role }, process.env.JWT_SECRET);
-  res.json({ token });
+  res.json({ token, role: user.role });
 });
 
 app.get('/api/productos', auth, async (req, res) => {
@@ -99,9 +91,10 @@ app.delete('/api/productos/:id', auth, isAdmin, async (req, res) => {
   res.sendStatus(204);
 });
 
-// ===== Iniciar servidor =====
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
+
+
 
 
 
